@@ -51,7 +51,7 @@
 				<key>ActionParameters</key>
 				<dict>
 					<key>source</key>
-					<string>set rootlessChoice to button returned of (display dialog "Enable or disable Rootless. You'll need to enter your administrator password." buttons {"Enable", "Disable", "Quit Potato"} default button 3 with title "Potato")if rootlessChoice = "Quit Potato" then	tell application "Potato"		quit	end tellelse if rootlessChoice is not "Quit Potato" then	set rebootChoice to button returned of (display dialog "You need to reboot for your change to take effect." buttons {"Reboot Now", "Reboot Later"} default button 2 with title "Potato")end ifif rootlessChoice = "Enable" then	if rebootChoice = "Reboot Later" then		do shell script "sudo nvram boot-args=\"\"" with administrator privileges	else if rebootChoice = "Reboot Now" then		do shell script "sudo nvram boot-args=\"\"; shutdown -r now" with administrator privileges	end if	else if rootlessChoice = "Disable" then	if rebootChoice = "Reboot Later" then		do shell script "sudo nvram boot-args=\"rootless 0\"" with administrator privileges	else if rebootChoice = "Reboot Now" then		do shell script "sudo nvram boot-args=\"rootless 0\"; shutdown -r now" with administrator privileges	end if	end if</string>
+					<string>global rootlessChoiceglobal errorChoiceglobal rebootChoiceset errorChoice to "allGood"set rootlessChoice to button returned of (display dialog "Enable or disable Rootless. You'll need to enter your administrator password." buttons {"Enable", "Disable", "Quit Potato"} default button 3 with title "Potato")on rootlessPicker()	try		if rootlessChoice = "Quit Potato" then			tell application "Potato"				quit			end tell					else if rootlessChoice = "Enable" then			do shell script "sudo nvram boot-args=\"\"" with administrator privileges					else if rootlessChoice = "Disable" then			do shell script "sudo nvram boot-args=\"rootless 0\"" with administrator privileges		end if			on error		set errorChoice to button returned of (display dialog "You need to enter your administrator password to change your Rootless setting." buttons {"Enter Password", "Quit Potato"} default button 1 with title "Potato" with icon caution)		if errorChoice = "Enter Password" then			rootlessPicker()		end if	end tryend rootlessPickeron rebootPicker()	if errorChoice = "Quit Potato" then		tell application "Potato"			quit		end tell	else		set rebootChoice to button returned of (display dialog "You need to reboot for your change to take effect." buttons {"Reboot Now", "Reboot Later"} default button 2 with title "Potato")		if rebootChoice = "Reboot Now" then			tell application "Finder"				restart			end tell		else if rebootChoice = "Reboot Later" then			tell application "Potato"				quit			end tell					end if	end ifend rebootPickerrootlessPicker()rebootPicker()</string>
 				</dict>
 				<key>BundleIdentifier</key>
 				<string>com.apple.Automator.RunScript</string>
@@ -105,7 +105,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<true/>
 				<key>location</key>
-				<string>309.000000:579.000000</string>
+				<string>399.500000:752.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
